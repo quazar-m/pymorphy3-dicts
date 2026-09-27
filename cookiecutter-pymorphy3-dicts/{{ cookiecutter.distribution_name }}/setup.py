@@ -6,12 +6,12 @@ setup(
     version='{{ cookiecutter.version }}',
     author='{{ cookiecutter.author }}',
     author_email='{{ cookiecutter.author_email }}',
-    url='https://github.com/no-plagiarism/pymorphy3-dicts',
+    url='https://github.com/quazar-m/pymorphy3-dicts',
 
     description='{{ cookiecutter.lang_full }} dictionaries for pymorphy3',
     long_description=open('README.rst').read(),
 
-    license='GPLv3 License',
+    license='MIT',
     packages=['{{ cookiecutter.package_name }}'],
     package_data={'{{ cookiecutter.package_name }}': ['data/*']},
     zip_safe=False,
