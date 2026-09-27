@@ -12,6 +12,9 @@ on:
   issues:
     types:
       - opened
+  pull_request:
+    types:
+      - opened
 
 permissions:
   contents: write
@@ -21,7 +24,9 @@ jobs:
     if: >-
       github.repository == 'quazar-m/pymorphy3-dicts' &&
       (github.event_name != 'issues' ||
-       github.event.issue.title == '[automation] Publish OpenCorpora snapshot')
+       github.event.issue.title == '[automation] Publish OpenCorpora snapshot') &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.title == '[automation] Publish OpenCorpora snapshot')
     runs-on: ubuntu-latest
     env:
       RELEASE_TAG: opencorpora-snapshot-2024
