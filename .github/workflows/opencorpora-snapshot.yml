@@ -1,0 +1,86 @@
+name: Publish OpenCorpora snapshot
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - .github/workflows/opencorpora-snapshot.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.repository == 'quazar-m/pymorphy3-dicts'
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: opencorpora-snapshot-2024
+      DICT_URL: https://web.archive.org/web/20240423122538id_/https://opencorpora.org/files/export/dict/dict.opcorpora.xml.bz2
+      CORPUS_URL: https://web.archive.org/web/20240624222734id_/https://opencorpora.org/files/export/annot/annot.opcorpora.xml.bz2
+
+    steps:
+      - name: Download archived OpenCorpora sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets
+
+          curl -fL             --retry 5             --retry-all-errors             --connect-timeout 30             --max-time 1800             -o assets/dict.opcorpora.xml.bz2             "$DICT_URL"
+
+          curl -fL             --retry 5             --retry-all-errors             --connect-timeout 30             --max-time 1800             -o assets/annot.opcorpora.xml.bz2             "$CORPUS_URL"
+
+      - name: Validate and checksum archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          bzip2 -t assets/dict.opcorpora.xml.bz2
+          bzip2 -t assets/annot.opcorpora.xml.bz2
+
+          (
+            cd assets
+            sha256sum               dict.opcorpora.xml.bz2               annot.opcorpora.xml.bz2               > SHA256SUMS
+          )
+
+          cat > assets/SOURCES.md <<'EOF'
+          # OpenCorpora source snapshots
+
+          These files are preservation copies of OpenCorpora source exports,
+          archived because the original OpenCorpora download service is no
+          longer reliably available.
+
+          ## Russian morphology dictionary
+
+          - File: `dict.opcorpora.xml.bz2`
+          - Original URL: `https://opencorpora.org/files/export/dict/dict.opcorpora.xml.bz2`
+          - Internet Archive capture: `2024-04-23 12:25:38 UTC`
+          - Wayback URL: `https://web.archive.org/web/20240423122538/https://opencorpora.org/files/export/dict/dict.opcorpora.xml.bz2`
+
+          ## Annotated corpus
+
+          - File: `annot.opcorpora.xml.bz2`
+          - Original URL: `https://opencorpora.org/files/export/annot/annot.opcorpora.xml.bz2`
+          - Internet Archive capture: `2024-06-24 22:27:34 UTC`
+          - Wayback URL: `https://web.archive.org/web/20240624222734/https://opencorpora.org/files/export/annot/annot.opcorpora.xml.bz2`
+
+          ## License
+
+          OpenCorpora data is distributed under CC BY-SA 3.0.
+          This release preserves the upstream data; it does not relicense it.
+
+          See `SHA256SUMS` for integrity hashes of the preserved archives.
+          EOF
+
+      - name: Publish GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if ! gh release view "$RELEASE_TAG"             --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG"               --repo "$GITHUB_REPOSITORY"               --target "$GITHUB_SHA"               --title "OpenCorpora source snapshot (2024)"               --notes-file assets/SOURCES.md
+          fi
+
+          gh release upload "$RELEASE_TAG"             --repo "$GITHUB_REPOSITORY"             --clobber             assets/dict.opcorpora.xml.bz2             assets/annot.opcorpora.xml.bz2             assets/SHA256SUMS             assets/SOURCES.md
