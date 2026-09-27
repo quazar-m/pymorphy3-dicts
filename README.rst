@@ -22,14 +22,26 @@ download code now:
 * validates that decompression/XML parsing succeeds;
 * allows trusted mirrors or local snapshots to be supplied explicitly.
 
-By default both Russian sources use frozen Internet Archive snapshots::
+By default both Russian sources are served from the
+`opencorpora-snapshot-2024`_ GitHub Release in this fork::
 
-    https://web.archive.org/web/20240423122538/https://opencorpora.org/files/export/dict/dict.opcorpora.xml.bz2
-    https://web.archive.org/web/20240624222734/https://opencorpora.org/files/export/annot/annot.opcorpora.xml.bz2
+    https://github.com/quazar-m/pymorphy3-dicts/releases/download/opencorpora-snapshot-2024/dict.opcorpora.xml.bz2
+    https://github.com/quazar-m/pymorphy3-dicts/releases/download/opencorpora-snapshot-2024/annot.opcorpora.xml.bz2
 
-The dictionary snapshot timestamp is 2024-04-23 12:25:38 UTC and the annotated
-corpus snapshot timestamp is 2024-06-24 22:27:34 UTC. This removes the default
-build dependency on the availability of the live OpenCorpora host.
+The release preserves the Internet Archive captures from
+2024-04-23 12:25:38 UTC (dictionary) and
+2024-06-24 22:27:34 UTC (annotated corpus). The release also contains
+``SHA256SUMS`` and ``SOURCES.md`` with provenance information.
+
+The build pins SHA256 by default::
+
+    dict.opcorpora.xml.bz2:
+      f27150955c5f0978ece14348096f7d1380fc3564b08fdf99f129ede586309b6c
+    annot.opcorpora.xml.bz2:
+      dff2b07a3db865eb234515c3c2c51e370fc67b3582f32af7174625c8f2be4422
+
+This removes the default build dependency on both the live OpenCorpora host
+and Internet Archive availability.
 
 For a mirror or an offline build, override them::
 
@@ -93,3 +105,4 @@ also supported.
 
 .. _pymorphy3: https://github.com/no-plagiarism/pymorphy3
 .. _VESUM / dict_uk: https://github.com/brown-uk/dict_uk
+.. _opencorpora-snapshot-2024: https://github.com/quazar-m/pymorphy3-dicts/releases/tag/opencorpora-snapshot-2024
