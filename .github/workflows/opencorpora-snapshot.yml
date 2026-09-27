@@ -9,13 +9,19 @@ on:
     paths:
       - .github/workflows/opencorpora-snapshot.yml
   workflow_dispatch:
+  issues:
+    types:
+      - opened
 
 permissions:
   contents: write
 
 jobs:
   publish:
-    if: github.repository == 'quazar-m/pymorphy3-dicts'
+    if: >-
+      github.repository == 'quazar-m/pymorphy3-dicts' &&
+      (github.event_name != 'issues' ||
+       github.event.issue.title == '[automation] Publish OpenCorpora snapshot')
     runs-on: ubuntu-latest
     env:
       RELEASE_TAG: opencorpora-snapshot-2024
