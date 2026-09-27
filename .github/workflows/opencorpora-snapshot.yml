@@ -1,5 +1,7 @@
 name: Publish OpenCorpora snapshot
 
+# Preserves the last known OpenCorpora source exports in this fork.
+
 on:
   push:
     branches:
