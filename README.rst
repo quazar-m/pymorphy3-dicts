@@ -22,10 +22,15 @@ download code now:
 * validates that decompression/XML parsing succeeds;
 * allows trusted mirrors or local snapshots to be supplied explicitly.
 
-By default the original OpenCorpora URLs are used::
+By default the Russian dictionary uses a frozen Internet Archive snapshot,
+while the annotated corpus still uses the original OpenCorpora endpoint::
 
-    https://opencorpora.org/files/export/dict/dict.opcorpora.xml.bz2
+    https://web.archive.org/web/20240423122538/https://opencorpora.org/files/export/dict/dict.opcorpora.xml.bz2
     https://opencorpora.org/files/export/annot/annot.opcorpora.xml.bz2
+
+The dictionary snapshot timestamp is 2024-04-23 12:25:38 UTC. This avoids
+depending on the availability of the live OpenCorpora host for the dictionary
+itself.
 
 For a mirror or an offline build, override them::
 
