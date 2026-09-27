@@ -41,7 +41,7 @@ OUT_PATH = "compiled-dicts"
 
 RU_DICT_URL = os.environ.get(
     "PYMORPHY3_RU_DICT_URL",
-    "https://opencorpora.org/files/export/dict/dict.opcorpora.xml.bz2",
+    "https://web.archive.org/web/20240423122538/https://opencorpora.org/files/export/dict/dict.opcorpora.xml.bz2",
 )
 RU_CORPORA_URL = os.environ.get(
     "PYMORPHY3_RU_CORPORA_URL",
