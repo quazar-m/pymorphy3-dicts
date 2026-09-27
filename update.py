@@ -45,7 +45,7 @@ RU_DICT_URL = os.environ.get(
 )
 RU_CORPORA_URL = os.environ.get(
     "PYMORPHY3_RU_CORPORA_URL",
-    "https://opencorpora.org/files/export/annot/annot.opcorpora.xml.bz2",
+    "https://web.archive.org/web/20240624222734/https://opencorpora.org/files/export/annot/annot.opcorpora.xml.bz2",
 )
 RU_DICT_SHA256 = os.environ.get("PYMORPHY3_RU_DICT_SHA256") or None
 RU_CORPORA_SHA256 = os.environ.get("PYMORPHY3_RU_CORPORA_SHA256") or None
