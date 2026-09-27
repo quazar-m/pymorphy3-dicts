@@ -1,32 +1,18 @@
 name: Publish OpenCorpora snapshot
 
-# Preserves the last known OpenCorpora source exports in this fork.
+# Re-publishes the preserved source snapshots into the immutable-style
+# GitHub Release assets. Run manually only when intentionally rebuilding
+# the preservation release.
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - .github/workflows/opencorpora-snapshot.yml
   workflow_dispatch:
-  issues:
-    types:
-      - opened
-  pull_request:
-    types:
-      - opened
 
 permissions:
   contents: write
 
 jobs:
   publish:
-    if: >-
-      github.repository == 'quazar-m/pymorphy3-dicts' &&
-      (github.event_name != 'issues' ||
-       github.event.issue.title == '[automation] Publish OpenCorpora snapshot') &&
-      (github.event_name != 'pull_request' ||
-       github.event.pull_request.title == '[automation] Publish OpenCorpora snapshot')
+    if: github.repository == 'quazar-m/pymorphy3-dicts'
     runs-on: ubuntu-latest
     env:
       RELEASE_TAG: opencorpora-snapshot-2024
@@ -40,20 +26,25 @@ jobs:
           set -euo pipefail
           mkdir -p assets
 
-          curl -fL             --retry 5             --retry-all-errors             --connect-timeout 30             --max-time 1800             -o assets/dict.opcorpora.xml.bz2             "$DICT_URL"
+          curl -fL --retry 5 --retry-all-errors \
+            --connect-timeout 30 --max-time 1800 \
+            -o assets/dict.opcorpora.xml.bz2 "$DICT_URL"
 
-          curl -fL             --retry 5             --retry-all-errors             --connect-timeout 30             --max-time 1800             -o assets/annot.opcorpora.xml.bz2             "$CORPUS_URL"
+          curl -fL --retry 5 --retry-all-errors \
+            --connect-timeout 30 --max-time 1800 \
+            -o assets/annot.opcorpora.xml.bz2 "$CORPUS_URL"
 
       - name: Validate and checksum archives
         shell: bash
         run: |
           set -euo pipefail
+
           bzip2 -t assets/dict.opcorpora.xml.bz2
           bzip2 -t assets/annot.opcorpora.xml.bz2
 
           (
             cd assets
-            sha256sum               dict.opcorpora.xml.bz2               annot.opcorpora.xml.bz2               > SHA256SUMS
+            sha256sum dict.opcorpora.xml.bz2 annot.opcorpora.xml.bz2 > SHA256SUMS
           )
 
           cat > assets/SOURCES.md <<'EOF'
@@ -92,8 +83,18 @@ jobs:
         run: |
           set -euo pipefail
 
-          if ! gh release view "$RELEASE_TAG"             --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create "$RELEASE_TAG"               --repo "$GITHUB_REPOSITORY"               --target "$GITHUB_SHA"               --title "OpenCorpora source snapshot (2024)"               --notes-file assets/SOURCES.md
+          if ! gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "OpenCorpora source snapshot (2024)" \
+              --notes-file assets/SOURCES.md
           fi
 
-          gh release upload "$RELEASE_TAG"             --repo "$GITHUB_REPOSITORY"             --clobber             assets/dict.opcorpora.xml.bz2             assets/annot.opcorpora.xml.bz2             assets/SHA256SUMS             assets/SOURCES.md
+          gh release upload "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber \
+            assets/dict.opcorpora.xml.bz2 \
+            assets/annot.opcorpora.xml.bz2 \
+            assets/SHA256SUMS \
+            assets/SOURCES.md
