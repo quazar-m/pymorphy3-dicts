@@ -41,14 +41,24 @@ OUT_PATH = "compiled-dicts"
 
 RU_DICT_URL = os.environ.get(
     "PYMORPHY3_RU_DICT_URL",
-    "https://web.archive.org/web/20240423122538/https://opencorpora.org/files/export/dict/dict.opcorpora.xml.bz2",
+    "https://github.com/quazar-m/pymorphy3-dicts/releases/download/"
+    "opencorpora-snapshot-2024/dict.opcorpora.xml.bz2",
 )
 RU_CORPORA_URL = os.environ.get(
     "PYMORPHY3_RU_CORPORA_URL",
-    "https://web.archive.org/web/20240624222734/https://opencorpora.org/files/export/annot/annot.opcorpora.xml.bz2",
+    "https://github.com/quazar-m/pymorphy3-dicts/releases/download/"
+    "opencorpora-snapshot-2024/annot.opcorpora.xml.bz2",
 )
-RU_DICT_SHA256 = os.environ.get("PYMORPHY3_RU_DICT_SHA256") or None
-RU_CORPORA_SHA256 = os.environ.get("PYMORPHY3_RU_CORPORA_SHA256") or None
+
+# Preserved source snapshots published in this fork.
+_DEFAULT_RU_DICT_SHA256 = "f27150955c5f0978ece14348096f7d1380fc3564b08fdf99f129ede586309b6c"
+_DEFAULT_RU_CORPORA_SHA256 = "dff2b07a3db865eb234515c3c2c51e370fc67b3582f32af7174625c8f2be4422"
+RU_DICT_SHA256 = os.environ.get(
+    "PYMORPHY3_RU_DICT_SHA256", _DEFAULT_RU_DICT_SHA256
+) or None
+RU_CORPORA_SHA256 = os.environ.get(
+    "PYMORPHY3_RU_CORPORA_SHA256", _DEFAULT_RU_CORPORA_SHA256
+) or None
 RU_DICT_XML = "dict.opcorpora.xml"
 RU_CORPORA_XML = "annot.corpus.xml"
 
