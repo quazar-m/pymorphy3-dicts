@@ -15,22 +15,27 @@ Install::
 Usage
 -----
 
-To use these dictionaries with pymorphy2 create MorphAnalyzer
-with ``lang='{{ cookiecutter.lang }}'`` parameter:
+To use these dictionaries with pymorphy3 create ``MorphAnalyzer`` with
+``lang='{{ cookiecutter.lang }}'`` parameter::
 
->>> import pymorphy3
->>> morph = pymorphy3.MorphAnalyzer(lang='{{ cookiecutter.lang }}')
+    >>> import pymorphy3
+    >>> morph = pymorphy3.MorphAnalyzer(lang='{{ cookiecutter.lang }}')
 
 To get a path to the installed dictionary data use
-``{{ cookiecutter.package_name }}.get_path()`` method.
+``{{ cookiecutter.package_name }}.get_path()``.
 
 Development
 -----------
 
-The main repo is https://github.com/no-plagiarism/pymorphy3-dicts. The repository
-doesn't contain the data itself: only package template and update
-scripts are stored in VCS.
+The build scripts are maintained at
+https://github.com/quazar-m/pymorphy3-dicts. The repository doesn't contain
+the dictionary data itself; data is fetched from the documented upstream
+source and compiled during the release process.
 
-License for Python code in this package is MIT.
-The data is licensed under
+License
+-------
+
+Python code in this package is MIT licensed.
+
+The dictionary data is licensed under
 {{ cookiecutter.data_license }}.
