@@ -2,21 +2,13 @@ name: Build pymorphy3 dictionary packages
 
 on:
   workflow_dispatch:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
 
 permissions:
   contents: read
 
 jobs:
   build:
-    if: >-
-      github.repository == 'quazar-m/pymorphy3-dicts' &&
-      (github.event_name != 'pull_request' ||
-       github.event.pull_request.title == '[automation] Build pymorphy3 dictionary packages')
+    if: github.repository == 'quazar-m/pymorphy3-dicts'
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
