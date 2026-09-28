@@ -103,6 +103,14 @@ Then run one of::
 Individual ``download``, ``compile``, ``package`` and ``cleanup`` stages are
 also supported.
 
+After generating a package, build its wheel and source distribution locally::
+
+    ./build-package.sh ru
+    ./build-package.sh uk
+
+The generated package's ``release.sh`` is build-only as well and runs
+``python -m build .``. Publishing is intentionally handled separately.
+
 .. _pymorphy3: https://github.com/no-plagiarism/pymorphy3
 .. _VESUM / dict_uk: https://github.com/brown-uk/dict_uk
 .. _opencorpora-snapshot-2024: https://github.com/quazar-m/pymorphy3-dicts/releases/tag/opencorpora-snapshot-2024
