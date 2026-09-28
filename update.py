@@ -65,8 +65,8 @@ RU_CORPORA_XML = "annot.corpus.xml"
 UK_DICT_VERSION = os.environ.get("PYMORPHY3_UK_DICT_VERSION", "6.8.6")
 UK_DICT_URL = os.environ.get(
     "PYMORPHY3_UK_DICT_URL",
-    "https://github.com/brown-uk/dict_uk/releases/download/"
-    "v{0}/dict_corp_vis.txt.bz2".format(UK_DICT_VERSION),
+    "https://github.com/quazar-m/pymorphy3-dicts/releases/download/"
+    "vesum-snapshot-{0}/dict_corp_vis.txt.bz2".format(UK_DICT_VERSION),
 )
 UK_DICT_TXT = "dict_corp_vis.txt"
 UK_DICT_XML = "full-uk.xml"
