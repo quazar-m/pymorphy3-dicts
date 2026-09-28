@@ -1,3 +1,4 @@
 One-time trigger for building pymorphy3-dicts-ru and pymorphy3-dicts-uk.
 retry=2
 retry=3
+retry=4
