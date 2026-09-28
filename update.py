@@ -247,7 +247,15 @@ class UkrainianBuilder(object):
         )
 
         print("Converting VESUM dictionary to OpenCorpora XML...")
-        subprocess.check_call(["lt_convert.py", UK_DICT_TXT, UK_DICT_XML])
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        subprocess.check_call(
+            [
+                "lt_convert.py",
+                os.path.abspath(UK_DICT_TXT),
+                os.path.abspath(UK_DICT_XML),
+            ],
+            cwd=base_dir,
+        )
         _validate_xml(UK_DICT_XML)
         print("")
 
