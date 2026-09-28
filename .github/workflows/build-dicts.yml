@@ -1,0 +1,93 @@
+name: Build pymorphy3 dictionary packages
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: >-
+      github.repository == 'quazar-m/pymorphy3-dicts' &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.title == '[automation] Build pymorphy3 dictionary packages')
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        lang:
+          - ru
+          - uk
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: pip
+
+      - name: Install system build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            libxml2-dev \
+            libxslt1-dev \
+            libbz2-dev
+
+      - name: Install Python build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip setuptools wheel build
+          python -m pip install -r requirements-build.txt
+
+      - name: Build dictionary source package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python update.py "${{ matrix.lang }}" all
+
+          package_dir="pymorphy3-dicts-${{ matrix.lang }}"
+          test -d "$package_dir"
+          python -m build "$package_dir"
+
+          python -m pip install --force-reinstall "$package_dir"/dist/*.whl
+          python - <<'PY'
+          import os
+          import pymorphy3
+
+          lang = os.environ["BUILD_LANG"]
+          morph = pymorphy3.MorphAnalyzer(lang=lang)
+          word = "тест" if lang == "ru" else "тест"
+          parsed = morph.parse(word)
+          if not parsed:
+              raise SystemExit("MorphAnalyzer smoke test returned no parses")
+          print(lang, parsed[0])
+          PY
+
+          {
+            echo "language=${{ matrix.lang }}"
+            echo "python=$(python --version 2>&1)"
+            echo "files:"
+            sha256sum "$package_dir"/dist/*
+          } > "$package_dir/dist/BUILD-INFO.txt"
+        env:
+          BUILD_LANG: ${{ matrix.lang }}
+
+      - name: Upload built distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: pymorphy3-dicts-${{ matrix.lang }}
+          path: pymorphy3-dicts-${{ matrix.lang }}/dist/*
+          if-no-files-found: error
+          retention-days: 30
