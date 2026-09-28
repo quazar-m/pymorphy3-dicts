@@ -1,0 +1,99 @@
+name: Publish VESUM snapshot
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: >-
+      github.repository == 'quazar-m/pymorphy3-dicts' &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.title == '[automation] Publish VESUM snapshot 6.8.6')
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: vesum-snapshot-6.8.6
+      VESUM_VERSION: 6.8.6
+      VESUM_TAG: v6.8.6
+      VESUM_COMMIT: fbf4caee38bc5995bb599731942ebeac8d2cd78f
+      VESUM_PUBLISHED_AT: 2026-09-19T20:59:38Z
+      VESUM_URL: https://github.com/brown-uk/dict_uk/releases/download/v6.8.6/dict_corp_vis.txt.bz2
+      VESUM_SHA256: e33803783ac138e6f3af2cf0e9428ba146c0ecfda7f5c41fe83ae00c7af24be9
+
+    steps:
+      - name: Download upstream VESUM asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets
+          curl -fL --retry 5 --retry-all-errors \
+            --connect-timeout 30 --max-time 1800 \
+            -o assets/dict_corp_vis.txt.bz2 "$VESUM_URL"
+
+      - name: Validate and checksum snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test "$(stat -c '%s' assets/dict_corp_vis.txt.bz2)" = "18195377"
+          echo "$VESUM_SHA256  assets/dict_corp_vis.txt.bz2" | sha256sum -c -
+          bzip2 -t assets/dict_corp_vis.txt.bz2
+
+          (
+            cd assets
+            sha256sum dict_corp_vis.txt.bz2 > SHA256SUMS
+          )
+
+          cat > assets/SOURCES.md <<EOF
+          # VESUM source snapshot
+
+          This release preserves the exact VESUM / dict_uk source asset used
+          to build the Ukrainian pymorphy3 dictionary package.
+
+          ## Source
+
+          - Project: `brown-uk/dict_uk`
+          - Release: `$VESUM_TAG`
+          - Version: `$VESUM_VERSION`
+          - Release published: `$VESUM_PUBLISHED_AT`
+          - Tag commit: `$VESUM_COMMIT`
+          - File: `dict_corp_vis.txt.bz2`
+          - Upstream URL: `$VESUM_URL`
+          - Size: `18195377` bytes
+          - SHA256: `$VESUM_SHA256`
+
+          ## License
+
+          The preserved dictionary data keeps the upstream VESUM license.
+          This release is a byte-for-byte preservation copy and does not
+          relicense the upstream data.
+
+          See `SHA256SUMS` for the integrity hash.
+          EOF
+
+      - name: Publish GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if ! gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "VESUM source snapshot $VESUM_VERSION" \
+              --notes-file assets/SOURCES.md
+          fi
+
+          gh release upload "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber \
+            assets/dict_corp_vis.txt.bz2 \
+            assets/SHA256SUMS \
+            assets/SOURCES.md
