@@ -58,22 +58,34 @@ and paradigms; the annotated corpus is used to estimate ``P(tag|word)``.
 Ukrainian dictionary
 --------------------
 
-The obsolete Google Drive file is no longer used. Ukrainian data now comes
-from the actively maintained `VESUM / dict_uk`_ releases.
+The obsolete Google Drive file is no longer used. The upstream Ukrainian
+dictionary is the actively maintained `VESUM / dict_uk`_ project.
 
-The default pinned source is VESUM ``v6.8.6`` asset
-``dict_corp_vis.txt.bz2``. Its published SHA256 is checked before conversion::
+For reproducible builds, the default source is the
+`vesum-snapshot-6.8.6`_ GitHub Release in this fork. It is a byte-for-byte
+preservation copy of upstream VESUM release ``v6.8.6``
+(``dict_corp_vis.txt.bz2``), published upstream on
+2026-09-19 20:59:38 UTC from tag commit
+``fbf4caee38bc5995bb599731942ebeac8d2cd78f``.
+
+The preserved asset size is 18195377 bytes and its SHA256 is checked before
+conversion::
 
     e33803783ac138e6f3af2cf0e9428ba146c0ecfda7f5c41fe83ae00c7af24be9
+
+The snapshot release also contains ``SHA256SUMS`` and ``SOURCES.md`` with
+provenance metadata.
 
 The archive is decompressed locally and then converted to OpenCorpora XML with
 LT3OpenCorpora before compilation::
 
     python update.py uk all
 
-To build another VESUM release, set ``PYMORPHY3_UK_DICT_VERSION`` together
-with the corresponding ``PYMORPHY3_UK_DICT_SHA256``. A custom/local source can
-be selected with ``PYMORPHY3_UK_DICT_URL``.
+To build another mirrored VESUM release, first create the corresponding
+``vesum-snapshot-<version>`` release, then set
+``PYMORPHY3_UK_DICT_VERSION`` together with the corresponding
+``PYMORPHY3_UK_DICT_SHA256``. For an intentional unmirrored test build,
+or for a local source, override ``PYMORPHY3_UK_DICT_URL`` explicitly.
 
 Licensing
 ---------
@@ -114,3 +126,5 @@ The generated package's ``release.sh`` is build-only as well and runs
 .. _pymorphy3: https://github.com/no-plagiarism/pymorphy3
 .. _VESUM / dict_uk: https://github.com/brown-uk/dict_uk
 .. _opencorpora-snapshot-2024: https://github.com/quazar-m/pymorphy3-dicts/releases/tag/opencorpora-snapshot-2024
+
+.. _vesum-snapshot-6.8.6: https://github.com/quazar-m/pymorphy3-dicts/releases/tag/vesum-snapshot-6.8.6
