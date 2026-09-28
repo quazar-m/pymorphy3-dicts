@@ -8,4 +8,5 @@ nltk > 3.0.0
 cookiecutter >= 1.5.1
 wheel
 setuptools
+build
 LT3OpenCorpora >= 0.0.1
